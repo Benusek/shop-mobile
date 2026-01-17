@@ -1,7 +1,6 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'quote.dart';
+import 'quote_card.dart';
 
 void main() {
   runApp(MaterialApp(home: Home()));
@@ -15,95 +14,39 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int level = 0;
+
+  List<Quote> quotes = [
+    Quote(author: 'egor', text: 'My name is Egor'),
+    Quote(author: 'egor', text: 'I have nothing'),
+    Quote(author: 'alex', text: 'My lose equal is little win')
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[900],
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          'First app',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 2,
-          ),
-        ),
+        title: Text('List of quotes',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold
+        )),
         centerTitle: true,
-        // create variable for 0xFF1A6FEE
-        backgroundColor: Color(0xFF1A6FEE),
+        backgroundColor: Colors.blueAccent,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: CircleAvatar(
-                backgroundImage: AssetImage('assets/logo.png'),
-                radius: 40,
-              ),
-            ),
-            Divider(height: 60, color: Colors.blue[700]),
-            Text(
-              'NAME',
-              style: TextStyle(letterSpacing: 2, color: Colors.white54),
-            ),
-            Text(
-              'Егор',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 28,
-                letterSpacing: 2,
-              ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'CURRENT LEVEL',
-              style: TextStyle(letterSpacing: 2, color: Colors.white54),
-            ),
-            Text(
-              '$level',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 28,
-                letterSpacing: 2,
-              ),
-            ),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                Icon(Icons.email, color: Colors.white70),
-                SizedBox(width: 10),
-                Text(
-                  'remizov.egg@gmail.com',
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 2,
-                    fontSize: 20,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            level += 1;
-          });
-        },
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30)
-        ),
-        child: Icon(Icons.add, color: Colors.blueAccent),
-      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: quotes.map((quote) => QuoteCard(
+          quote: quote,
+          delete: () {
+            setState(() {
+              quotes.remove(quote);
+            });
+          }
+        )).toList(),
+      )
     );
   }
 }
+
+
