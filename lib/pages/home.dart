@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/services/api.dart';
+import 'package:ui/ui.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -8,74 +10,144 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Map data = {};
+
+  String _email = '';
+  String _password = '';
+  bool hide = true;
 
   @override
   Widget build(BuildContext context) {
-    data = data.isNotEmpty ? data : ModalRoute.of(context)?.settings.arguments as Map;
-    Color? bgColor = data['isDaytime'] ? Colors.blueAccent : Colors.indigo[800];
-
-    String bgImage = data['isDaytime'] ? 'day.png' : 'night.png';
     return Scaffold(
-      backgroundColor: bgColor,
-      body: SafeArea(
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/$bgImage'),
-              fit: BoxFit.cover
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 120, 0, 0),
-            child: Column(
-              children: [
-                TextButton.icon(
-                  onPressed: () async {
-                    dynamic result = await Navigator.pushNamed(context, '/location');
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 103, 20, 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    '✋',
+                    style: TextStyle(
+                      fontSize: 32,
+                    )
+                  ),
+                  SizedBox(width:16),
+                  Text(
+                    'Добро пожаловать!',
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.0033
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(height: 23),
+              Text(
+                  'Войдите чтобы пользовать функциями приложения',
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                  )
+              ),
+              SizedBox(height: 64),
+              Text(
+                'Вход по E-mail',
+                style: TextStyle(
+                  color: Colors.black54
+                )
+              ),
+              Input(
+                keyboardType: TextInputType.emailAddress,
+                labelText: 'example@gmail.com',
+                func: (value) {
+                  setState(() {
+                    _email = value;
+                  });
+                },
+              ),
+              SizedBox(height: 14),
+              Text(
+                  'Пароль',
+                  style: TextStyle(
+                      color: Colors.black54
+                  )
+              ),
+              TextField(
+                obscureText: hide,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    borderSide: BorderSide(
+                      color: Colors.red,
+                      width: 2
+                    ),
+                  ),
+                  fillColor:  Color(0xFFF5F5F9),
+                  filled: true,
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  suffixIcon: IconButton(
+                    icon: Icon(hide?Icons.visibility: Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        hide = !hide;
+                      });
+                    },
+                    highlightColor: Colors.transparent,
+                  )
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _password = value;
+                  });
+                }
+              ),
+              SizedBox(height:14),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: TextButton(
+                  onPressed: () {
                     setState(() {
-                      print(result);
-                      data = {
-                        'time': result['time'],
-                        'location': result['location'],
-                        'isDaytime': result['isDaytime'],
-                        'flag': result['flag'],
-                      };
+                      Api get = Api();
+                      get.auth();
                     });
                   },
-                  icon: Icon(Icons.edit_location),
-                  label: Text('Edit location page'),
                   style: TextButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)
+                    ),
                     backgroundColor: Colors.blueAccent,
                     foregroundColor: Colors.white,
                   ),
-                ),
-                SizedBox(height:10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                  Text(
-                    data['location'],
+                  child: Text(
+                    'Далее',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      letterSpacing: 2
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600
                     )
                   )
-                ]),
-                SizedBox(height: 20),
-                Text(
-                  data['time'],
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 66,
+                ),
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/register');
+                  },
+                  child: Text(
+                    'Зарегистрироваться',
+                    style: TextStyle(
+                      color: Colors.blue
+                    )
                   )
-                )
-              ],
-            ),
+                ),
+              )
+            ],
           ),
-        ),
-      ),
+        )
     );
   }
 }
