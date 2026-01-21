@@ -12,8 +12,6 @@ class CreatePassword extends StatefulWidget {
 class _CreatePasswordState extends State<CreatePassword> {
   bool hide = true;
   bool hide2 = true;
-  String _password = '';
-  String _passwordConf = '';
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +43,6 @@ class _CreatePasswordState extends State<CreatePassword> {
                   onPressed: () => setState(() => hide = !hide),
                   highlightColor: Colors.transparent,
                 ),
-                func: (value) {
-                  setState(() {
-                    _password = value;
-                    print(_password);
-                  });
-                },
               ),
               SizedBox(height: 12),
               Label(text: 'Повторите пароль'),
@@ -61,13 +53,7 @@ class _CreatePasswordState extends State<CreatePassword> {
                   icon: Icon(hide2 ? Icons.visibility : Icons.visibility_off),
                   onPressed: () => setState(() => hide2 = !hide2),
                   highlightColor: Colors.transparent,
-                ),
-                func: (value) {
-                  setState(() {
-                    _passwordConf = value;
-                    print(_passwordConf);
-                  });
-                },
+                )
               ),
               SizedBox(height: 12),
               CompletedButton(

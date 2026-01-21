@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/services/api.dart';
 import 'package:ui/ui.dart';
+import 'package:mobile/models/user.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -10,10 +11,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String _email = '';
-  String _password = '';
   bool hide = true;
 
+  final _formGlobalKey = GlobalKey<FormState>();
+  String _email = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,46 +38,54 @@ class _HomeState extends State<Home> {
               style: TextStyle(fontSize: 15),
             ),
             SizedBox(height: 64),
-            Label(text: 'Вход по E-mail'),
-            Input(
-              keyboardType: TextInputType.emailAddress,
-              labelText: 'example@gmail.com',
-              func: (value) {
-                setState(() {
-                  _email = value;
-                });
-              },
-            ),
-            SizedBox(height: 14),
-            Label(text: 'Пароль'),
-            Input(
-              password: true,
-              private: hide,
-              suffix: IconButton(
-                icon: Icon(
-                  hide
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                ),
-                onPressed: () => setState(() => hide = !hide),
-                highlightColor: Colors.transparent,
-              ),
-              func: (value) {
-                setState(() {
-                  _password = value;
-                  print(_password);
-                });
-              },
-            ),
-            SizedBox(height: 14),
-            CompletedButton(
-              text: 'Далее',
-              func: _email.isNotEmpty || _password.isNotEmpty
-                  ? () => setState(() {
+            Form(
+              key: _formGlobalKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Label(text: 'Вход по E-mail'),
+                  Input(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'error';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.emailAddress,
+                    labelText: 'example@gmail.com',
+                  ),
+                  SizedBox(height: 14),
+                  Label(text: 'Пароль'),
+                  Input(
+                      validator: (value) {
+                        if (value!.length < 5) {
+                          return 'error';
+                        }
+                        return null;
+                      },
+                      password: true,
+                      private: hide,
+                      suffix: IconButton(
+                        icon: Icon(
+                          hide
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                        ),
+                        onPressed: () => setState(() => hide = !hide),
+                        highlightColor: Colors.transparent,
+                      )
+                  ),
+                  SizedBox(height: 14),
+                  CompletedButton(
+                    text: 'Далее',
+                    func: () => setState(() {
+                      _formGlobalKey.currentState!.validate();
                       Api get = Api();
                       get.auth();
-                    })
-                  : null,
+                    }),
+                  ),
+                ],
+              ),
             ),
             SizedBox(
               width: double.infinity,
