@@ -11,10 +11,14 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  bool hasError = false;
+  String emailError = '';
+  String passError = '';
   bool hide = true;
-
   final _formGlobalKey = GlobalKey<FormState>();
   String _email = '';
+  String _password = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,9 +49,15 @@ class _HomeState extends State<Home> {
                 children: [
                   Label(text: 'Вход по E-mail'),
                   Input(
+                    saved: (value) {
+                      _email = value!;
+                    },
+                    error: hasError && emailError.isNotEmpty
+                        ? emailError
+                        : null,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'error';
+                        return 'The email field is required';
                       }
                       return null;
                     },
@@ -57,32 +67,50 @@ class _HomeState extends State<Home> {
                   SizedBox(height: 14),
                   Label(text: 'Пароль'),
                   Input(
-                      validator: (value) {
-                        if (value!.length < 5) {
-                          return 'error';
-                        }
-                        return null;
-                      },
-                      password: true,
-                      private: hide,
-                      suffix: IconButton(
-                        icon: Icon(
-                          hide
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                        ),
-                        onPressed: () => setState(() => hide = !hide),
-                        highlightColor: Colors.transparent,
-                      )
+                    saved: (value) {
+                      _password = value!;
+                    },
+                    error: hasError && passError.isNotEmpty ? passError : null,
+                    validator: (value) {
+                      if (value!.length < 8) {
+                        return 'The password must contain at least 8 characters.';
+                      }
+                      return null;
+                    },
+                    password: true,
+                    private: hide,
+                    suffix: IconButton(
+                      icon: Icon(
+                        hide
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                      ),
+                      onPressed: () => setState(() => hide = !hide),
+                      highlightColor: Colors.transparent,
+                    ),
                   ),
                   SizedBox(height: 14),
                   CompletedButton(
                     text: 'Далее',
-                    func: () => setState(() {
-                      _formGlobalKey.currentState!.validate();
+                    func: () async {
+                      setState(() {
+                        if (_formGlobalKey.currentState!.validate()) {
+                          _formGlobalKey.currentState!.save();
+                        }
+                      });
                       Api get = Api();
-                      get.auth();
-                    }),
+                      //TODO: returns user class object or map of errors
+                      Map<String, dynamic> response = await get.auth(
+                        _email,
+                        _password,
+                      );
+                      if (response['error']['errors'].isNotEmpty) {
+                        hasError = true;
+                        Map errors = response['error']?['errors'];
+                        emailError = errors['email'][0];
+                        passError = errors['password'][0];
+                      }
+                    },
                   ),
                 ],
               ),
