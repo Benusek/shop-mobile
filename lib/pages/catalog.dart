@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+class Catalog extends StatefulWidget {
+  const Catalog({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  State<Catalog> createState() => _CatalogState();
 }
 
-class _HomeState extends State<Home> {
+class _CatalogState extends State<Catalog> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -16,12 +16,9 @@ class _HomeState extends State<Home> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Search'),
-            Text('Акции и новости'),
-            Text('Slider'),
-            Text('Каталог описаний'),
+            Text('Search / Профиль'),
             Text('Категории меню (Мужчинам, Детям и т.д)'),
-            Text('Список продуктов'),
+            Text('Список продуктов')
           ],
         ),
       ),

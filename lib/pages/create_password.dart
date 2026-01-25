@@ -15,6 +15,7 @@ class _CreatePasswordState extends State<CreatePassword> {
 
   @override
   Widget build(BuildContext context) {
+    final data = ModalRoute.of(context)?.settings.arguments;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,

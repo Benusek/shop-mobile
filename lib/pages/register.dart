@@ -11,15 +11,39 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  List<String> inputs = [
-    'Имя',
-    'Отчество',
-    'Фамилия',
-    'Дата рождения',
-    'Почта',
-  ];
-
   late Gender _selectedGender = Gender.men;
+
+  Widget input(String title, TextInputType? type) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Input(labelText: title, keyboardType: type ?? TextInputType.text),
+    );
+  }
+
+  Widget select() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Select(
+        label: 'Пол',
+        func: (value) => _selectedGender = value!,
+        items: Gender.values.map((gender) {
+          return DropdownMenuItem(value: gender, child: Text(gender.title));
+        }).toList(),
+      ),
+    );
+  }
+
+  late final List<Map<String, dynamic>> inputs = [
+    {'code': 'firstname', 'widget': input('Имя', null)},
+    {'code': 'lastname', 'widget': input('Фамилия', null)},
+    {'code': 'secondname', 'widget': input('Отчество', null)},
+    {
+      'code': 'datebirthday',
+      'widget': input('Дата рождения', TextInputType.datetime),
+    },
+    {'code': 'gender', 'widget': select()},
+    {'code': 'email', 'widget': input('Почта', TextInputType.emailAddress)},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -45,29 +69,15 @@ class _RegisterState extends State<Register> {
                 child: ListView.builder(
                   itemCount: inputs.length,
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Input(labelText: inputs[index]),
-                    );
+                    return inputs[index]['widget'];
                   },
                 ),
-              ),
-              Select(
-                label: 'Пол',
-                func: (value) => _selectedGender = value!,
-                items: Gender.values.map((gender) {
-                  return DropdownMenuItem(
-                    value: gender,
-                    child: Text(gender.title),
-                  );
-                }).toList(),
               ),
               CompletedButton(
                 text: 'Далее',
                 func: () {
                   setState(() {
-                    print('completed');
-                    Navigator.pushReplacementNamed(context, '/password');
+                    Navigator.pushNamed(context, '/password', arguments: {});
                   });
                 },
               ),
