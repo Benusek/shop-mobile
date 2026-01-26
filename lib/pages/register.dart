@@ -3,6 +3,8 @@ import 'package:ui/ui.dart';
 import 'package:mobile/services/api.dart';
 import 'package:mobile/models/user.dart';
 
+import '../presentaions/forms/form_field_config.dart';
+
 class Register extends StatefulWidget {
   const Register({super.key});
 
@@ -11,38 +13,23 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  late Gender _selectedGender = Gender.men;
-
-  Widget input(String title, TextInputType? type) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Input(labelText: title, keyboardType: type ?? TextInputType.text),
-    );
-  }
-
-  Widget select() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Select(
-        label: 'Пол',
-        func: (value) => _selectedGender = value!,
-        items: Gender.values.map((gender) {
-          return DropdownMenuItem(value: gender, child: Text(gender.title));
-        }).toList(),
-      ),
-    );
-  }
-
-  late final List<Map<String, dynamic>> inputs = [
-    {'code': 'firstname', 'widget': input('Имя', null)},
-    {'code': 'lastname', 'widget': input('Фамилия', null)},
-    {'code': 'secondname', 'widget': input('Отчество', null)},
-    {
-      'code': 'datebirthday',
-      'widget': input('Дата рождения', TextInputType.datetime),
-    },
-    {'code': 'gender', 'widget': select()},
-    {'code': 'email', 'widget': input('Почта', TextInputType.emailAddress)},
+  final GlobalKey<FormState> _formGlobalKey = GlobalKey<FormState>() ;
+  late Gender _selectedGender;
+  final fields = [
+    FormFieldConfig(code: 'firstname', label: 'Имя'),
+    FormFieldConfig(code: 'lastname', label: 'Фамилия'),
+    FormFieldConfig(code: 'secondname', label: 'Отчество'),
+    FormFieldConfig(
+      code: 'datebirthday',
+      label: 'Дата рождения',
+      type: TextInputType.datetime,
+    ),
+    FormFieldConfig(code: 'gender', label: 'Пол', isSelect: true),
+    FormFieldConfig(
+      code: 'email',
+      label: 'Почта',
+      type: TextInputType.emailAddress,
+    ),
   ];
 
   @override
@@ -65,20 +52,65 @@ class _RegisterState extends State<Register> {
                     'В профиле будут храниться результаты проектов и ваши описания.',
               ),
               SizedBox(height: 32),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: inputs.length,
-                  itemBuilder: (context, index) {
-                    return inputs[index]['widget'];
-                  },
+                Expanded(
+                  child: Form(
+                    key: _formGlobalKey,
+                    child: ListView.builder(
+                      itemCount: fields.length,
+                      itemBuilder: (context, index) {
+                        return fields[index].isSelect
+                            ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Select(
+                            label: 'Пол',
+                            func: (value) => _selectedGender = value!,
+                            items: Gender.values.map((gender) {
+                              return DropdownMenuItem(
+                                value: gender,
+                                child: Text(gender.title),
+                              );
+                            }).toList(),
+                          ),
+                        )
+                            : Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Input(
+                            labelText: fields[index].label,
+                            keyboardType:
+                            fields[index].type ?? TextInputType.text,
+                            saved: (value) {
+                              print(value);
+                              fields[index].setValue(value!);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ),
-              ),
               CompletedButton(
                 text: 'Далее',
                 func: () {
-                  setState(() {
-                    Navigator.pushNamed(context, '/password', arguments: {});
-                  });
+                  _formGlobalKey.currentState!.save();
+                  Map<String, dynamic> data = Map();
+                  for (int i = 0; i < fields.length; i++) {
+                    switch (fields[i].code) {
+                      case 'email':
+                        break;
+                      case 'gender':
+                        data[fields[i].code] = _selectedGender.code ? 'male': 'female';
+                        break;
+                      default:
+                        data[fields[i].code] = fields[i].value;
+                        break;
+                    }
+                  }
+                  print(data);
+                  Api().register(data, fields[5].value.toString(), '123123');
+                  Navigator.pushNamed(context, '/password', arguments: {data, data[fields[5].value], '123' });
+                  // setState(() {
+                  //
+                  // });
                 },
               ),
             ],
