@@ -71,12 +71,12 @@ class _AuthState extends State<Auth> {
                       _password = value!;
                     },
                     error: hasError && passError.isNotEmpty ? passError : null,
-                    validator: (value) {
-                      if (value!.length < 8) {
-                        return 'The password must contain at least 8 characters.';
-                      }
-                      return null;
-                    },
+                    // validator: (value) {
+                    //   if (value!.length < 8) {
+                    //     return 'The password must contain at least 8 characters.';
+                    //   }
+                    //   return null;
+                    // },
                     password: true,
                     private: hide,
                     suffix: IconButton(
@@ -100,7 +100,7 @@ class _AuthState extends State<Auth> {
                       });
                       Api get = Api();
                       //TODO: returns user class object or map of errors
-                      Map<String, dynamic> response = await get.auth(
+                      final response = await get.auth(
                         _email,
                         _password,
                       );

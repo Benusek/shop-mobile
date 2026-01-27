@@ -1,17 +1,24 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:mobile/models/user.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' hide User;
+// import 'package:mobile/models/user.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Api {
   final supabase = Supabase.instance.client;
   Future<dynamic>? auth(String email, String pass) async {
     try {
-      await supabase.auth.signInWithPassword(
+      final AuthResponse res = await supabase.auth.signInWithPassword(
         email: email,
         password: pass,
       );
+
+      final Session? session = res.session;
+      final User? user = res.user;
+      print('user: $user');
+      print('session: ${session!.accessToken}');
+      final public = await supabase.from('users').select();
+      print('user.data: $public');
     } on AuthException catch (error) {
       print(error.message);
     }
@@ -37,12 +44,13 @@ class Api {
       if (user == null) return;
 
       await supabase.from('users').insert({
-        'id': user.id,
-        'firstname': data['firstmame'],
+        'id': 'e94d0a92-1e58-4d04-befd-3cbba3d8d822',
+        'firstname': data['firstname'],
         'lastname':  data['lastname'],
         'secondname': data['secondname'],
         'gender':  data['gender'],
-        'birthday':  data['datebirthday'],
+        'email': email,
+        'datebirthday':  data['datebirthday'],
       });
       print(session);
       // final User? user = res.user;

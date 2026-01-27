@@ -10,6 +10,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final TextEditingController _searchController = TextEditingController();
+  int selectedCategory = 0;
+  final List<String> categories = ['Все', 'Женщинам', 'Мужчинам'];
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +39,16 @@ class _HomeState extends State<Home> {
             SizedBox(height: 32),
             SubTitle(text: 'Акции и новости'),
             SizedBox(height: 16),
-
             SizedBox(
               height: 160,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
-                  PromoCard(price: '4000 ₽', title: 'Шорты\nВторник'),
+                  PromoCard(
+                    price: '4000 ₽',
+                    title: 'Шорты\nВторник',
+                    image: 'assets/vaccine.png',
+                  ),
                   PromoCard(price: '4000 ₽', title: 'Шорты\nВторник'),
                 ],
               ),
@@ -51,8 +56,38 @@ class _HomeState extends State<Home> {
             SizedBox(height: 32),
             SubTitle(text: 'Каталог описаний'),
             SizedBox(height: 15),
-            Text('Категории меню (Мужчинам, Детям и т.д)'),
-            Text('Список продуктов'),
+            SizedBox(
+              height: 48,
+              child: ListView.separated(
+                itemCount: categories.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (BuildContext context, int index) {
+                  return Category(
+                    func: () => setState(() => selectedCategory = index),
+                    title: categories[index],
+                    isSelected: index == selectedCategory ? true : false,
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return SizedBox(width: 16);
+                },
+              ),
+            ),
+            SizedBox(height: 15),
+            Expanded(
+              child: ListView.separated(
+                itemCount: 3,
+                itemBuilder: (BuildContext context, int index) {
+                  return SizedBox(
+                    width: double.infinity,
+                    child: CardBackground(),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return SizedBox(height: 16);
+                },
+              ),
+            ),
           ],
         ),
       ),

@@ -107,10 +107,7 @@ class _RegisterState extends State<Register> {
                   }
                   print(data);
                   Api().register(data, fields[5].value.toString(), '123123');
-                  Navigator.pushNamed(context, '/password', arguments: {data, data[fields[5].value], '123' });
-                  // setState(() {
-                  //
-                  // });
+                  // Navigator.pushNamed(context, '/password', arguments: {data, data[fields[5].value], '123' });
                 },
               ),
             ],
