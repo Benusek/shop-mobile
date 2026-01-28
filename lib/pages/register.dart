@@ -91,23 +91,41 @@ class _RegisterState extends State<Register> {
               CompletedButton(
                 text: 'Далее',
                 func: () {
-                  _formGlobalKey.currentState!.save();
-                  Map<String, dynamic> data = Map();
-                  for (int i = 0; i < fields.length; i++) {
-                    switch (fields[i].code) {
-                      case 'email':
-                        break;
-                      case 'gender':
-                        data[fields[i].code] = _selectedGender.code ? 'male': 'female';
-                        break;
-                      default:
-                        data[fields[i].code] = fields[i].value;
-                        break;
+                  if (_formGlobalKey.currentState!.validate()) {
+                    _formGlobalKey.currentState!.save();
+
+                    Map<String, dynamic> data = {};
+                    for (var field in fields) {
+                      if (field.code.contains('gender')) {
+                        data[field.code] = _selectedGender.code ? 'male': 'female';
+                      } else {
+                        data[field.code] = field.value;
+                      }
                     }
+
+                    Navigator.pushNamed(context, '/password', arguments: data);
                   }
-                  print(data);
-                  Api().register(data, fields[5].value.toString(), '123123');
+
+
+
+                  // Map<String, dynamic> data = {};
+                  // for (int i = 0; i < fields.length; i++) {
+                  //   switch (fields[i].code) {
+                  //     case 'email':
+                  //       break;
+                  //     case 'gender':
+                  //       data[fields[i].code] = _selectedGender.code ? 'male': 'female';
+                  //       break;
+                  //     default:
+                  //       data[fields[i].code] = fields[i].value;
+                  //       break;
+                  //   }
+                  // }
+                  // print(data);
+                  // Api().register(data, fields[5].value.toString(), '123123');
                   // Navigator.pushNamed(context, '/password', arguments: {data, data[fields[5].value], '123' });
+
+
                 },
               ),
             ],

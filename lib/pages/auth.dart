@@ -99,7 +99,7 @@ class _AuthState extends State<Auth> {
                         }
                       });
                       Api get = Api();
-                      //TODO: returns user class object or map of errors
+                      //TODO: returns user class object or map of errors and navigator.of(context).Replaced...
                       final response = await get.auth(
                         _email,
                         _password,

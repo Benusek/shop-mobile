@@ -11,6 +11,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final TextEditingController _searchController = TextEditingController();
   int selectedCategory = 0;
+  //TODO: Duplicate written
   final List<String> categories = ['Все', 'Женщинам', 'Мужчинам'];
 
   @override
@@ -21,20 +22,21 @@ class _HomeState extends State<Home> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            //TODO: Prefix and suffix move to package of components
             Input(
-              labelText: 'Поиск',
+              labelText: 'Искать описания',
               controller: _searchController,
               prefix: Icon(Icons.search),
               changed: (value) =>
-                  setState(() => _searchController.text = value!),
-              suffix: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () => setState(() {
-                        _searchController.clear();
-                      }),
-                    )
-                  : null,
+                setState(() => _searchController.text = value!),
+                suffix: _searchController.text.isNotEmpty
+                ? IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () => setState(() {
+                      _searchController.clear();
+                    }),
+                  )
+                : null,
             ),
             SizedBox(height: 32),
             SubTitle(text: 'Акции и новости'),
@@ -56,6 +58,7 @@ class _HomeState extends State<Home> {
             SizedBox(height: 32),
             SubTitle(text: 'Каталог описаний'),
             SizedBox(height: 15),
+            //TODO: Move category list to package of components
             SizedBox(
               height: 48,
               child: ListView.separated(
@@ -74,13 +77,19 @@ class _HomeState extends State<Home> {
               ),
             ),
             SizedBox(height: 15),
+            //TODO: Move category list to package of components
             Expanded(
               child: ListView.separated(
                 itemCount: 3,
                 itemBuilder: (BuildContext context, int index) {
                   return SizedBox(
                     width: double.infinity,
-                    child: CardBackground(),
+                    child: CardOrder(
+                      gender: 'female',
+                      title: 'Рубашка Воскресенье для машинного вязания',
+                      price: '${300 * index} ₽',
+                      added: true
+                    ),
                   );
                 },
                 separatorBuilder: (BuildContext context, int index) {

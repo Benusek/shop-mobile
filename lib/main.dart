@@ -7,7 +7,7 @@ import 'package:mobile/pages/splash.dart';
 
 void main() {
   runApp(MaterialApp(
-    initialRoute: '/home',
+    initialRoute: '/splash',
     routes: {
       '/': (context) => Auth(),
       '/register': (context) => Register(),
