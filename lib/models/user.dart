@@ -9,38 +9,50 @@ enum Gender {
 }
 
 class User {
-  final int id;
+  final String id;
   final String name;
   final String? surname;
   final String? patronymic;
-  final String login;
-  final bool male;
+  final String gender;
   final DateTime birthday;
   final DateTime created;
+  final String email;
 
   User({
     required this.id,
     required this.name,
     this.surname,
     this.patronymic,
-    required this.login,
-    required this.male,
+    required this.gender,
     required this.birthday,
-    required this.created
+    required this.created,
+    required this.email
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    json = json['data']['user'];
     return User(
       id: json['id'],
-      name: json['first_name'],
-      surname: json['second_name'],
-      patronymic: json['last_name'],
-      login: json['login'],
-      male: json['male'] == 1 ? true : false,
-      birthday: DateTime.parse(json['birthday']),
-      created: DateTime.parse(json['created_at'])
+      name: json['firstname'],
+      surname: json['secondname'],
+      patronymic: json['lastname'],
+      email: json['email'],
+      gender: json['gender'],
+      birthday: DateTime.parse(json['datebirthday']),
+      created: DateTime.parse(json['created'])
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "name": name,
+      "surname": surname,
+      "patronymic": patronymic,
+      "email": email,
+      "gender": gender,
+      "birthday": birthday,
+      "created": created
+    };
   }
 }
 

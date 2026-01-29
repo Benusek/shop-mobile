@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-// import 'package:mobile/models/user.dart';
+import 'package:mobile/services/secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Api {
   final supabase = Supabase.instance.client;
+  final secureStorage = SecureStorage();
   Future<dynamic>? auth(String email, String pass) async {
     try {
       final AuthResponse res = await supabase.auth.signInWithPassword(
@@ -12,20 +15,19 @@ class Api {
       );
 
       final Session? session = res.session;
-      final User? user = res.user;
-      print('user: $user');
-      print('session: ${session!.accessToken}');
-      final public = await supabase.from('users').select();
-      print('user.data: $public');
+      final user = await supabase.from('users').select().limit(1).single();
+
+      await secureStorage.writeSecureData('token', session!.accessToken);
+      await secureStorage.writeSecureData('user.data', jsonEncode(user));
+
     } on AuthException catch (error) {
       print(error.message);
     }
   }
 
-  void logout(BuildContext context) async {
+  void logout() async {
     await supabase.auth.signOut();
-    // TODO: Navigate to screen authorization
-    // Navigator.pushAndRemoveUntil(context, 'auth' as Route<Object?>, (route) => false);
+    secureStorage.deleteAllData();
   }
 
   void register(Map <String, dynamic> data, String email, String password) async {

@@ -3,6 +3,8 @@ import 'package:mobile/services/api.dart';
 import 'package:ui/ui.dart';
 import 'package:mobile/models/user.dart';
 
+import '../models/session.dart';
+
 class Auth extends StatefulWidget {
   const Auth({super.key});
 
@@ -98,13 +100,8 @@ class _AuthState extends State<Auth> {
                           _formGlobalKey.currentState!.save();
                         }
                       });
-                      Api get = Api();
-                      //TODO: returns user class object or map of errors and navigator.of(context).Replaced...
-                      final response = await get.auth(
-                        _email,
-                        _password,
-                      );
-                      print(response);
+                      await Api().auth(_email, _password);
+                      Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
                     },
                   ),
                 ],

@@ -14,7 +14,7 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   final GlobalKey<FormState> _formGlobalKey = GlobalKey<FormState>() ;
-  late Gender _selectedGender;
+  Gender? _selectedGender;
   final fields = [
     FormFieldConfig(code: 'firstname', label: 'Имя'),
     FormFieldConfig(code: 'lastname', label: 'Фамилия'),
@@ -62,6 +62,10 @@ class _RegisterState extends State<Register> {
                             ? Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           child: Select(
+                            validator: (value) {
+                              if (_selectedGender == null) return 'Field of select is required';
+                              return null;
+                            },
                             label: 'Пол',
                             func: (value) => _selectedGender = value!,
                             items: Gender.values.map((gender) {
@@ -82,6 +86,12 @@ class _RegisterState extends State<Register> {
                               print(value);
                               fields[index].setValue(value!);
                             },
+                            validator: (value) {
+                              if (value!.isEmpty && !['secondname', 'lastname'].contains(fields[index].code)) {
+                                return 'This field is required';
+                              }
+                              return null;
+                            },
                           ),
                         );
                       },
@@ -92,40 +102,21 @@ class _RegisterState extends State<Register> {
                 text: 'Далее',
                 func: () {
                   if (_formGlobalKey.currentState!.validate()) {
+                    if (_selectedGender == null) return;
+                    print(_selectedGender);
                     _formGlobalKey.currentState!.save();
-
                     Map<String, dynamic> data = {};
                     for (var field in fields) {
                       if (field.code.contains('gender')) {
-                        data[field.code] = _selectedGender.code ? 'male': 'female';
+                        data[field.code] = _selectedGender!.code ? 'male': 'female';
                       } else {
                         data[field.code] = field.value;
                       }
                     }
 
+                    //TODO: Api response with error of this values => other page opened
                     Navigator.pushNamed(context, '/password', arguments: data);
                   }
-
-
-
-                  // Map<String, dynamic> data = {};
-                  // for (int i = 0; i < fields.length; i++) {
-                  //   switch (fields[i].code) {
-                  //     case 'email':
-                  //       break;
-                  //     case 'gender':
-                  //       data[fields[i].code] = _selectedGender.code ? 'male': 'female';
-                  //       break;
-                  //     default:
-                  //       data[fields[i].code] = fields[i].value;
-                  //       break;
-                  //   }
-                  // }
-                  // print(data);
-                  // Api().register(data, fields[5].value.toString(), '123123');
-                  // Navigator.pushNamed(context, '/password', arguments: {data, data[fields[5].value], '123' });
-
-
                 },
               ),
             ],

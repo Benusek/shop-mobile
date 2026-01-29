@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/services/secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Splash extends StatefulWidget {
@@ -16,7 +17,14 @@ class _SplashState extends State<Splash> {
       url: 'https://snjydmmwfxsjsawunbsm.supabase.co',
       anonKey: 'sb_publishable_9XoDcC3UdA-ClIjsHH6oUA_HNZYgm9N',
     );
-    if (mounted) Navigator.pushReplacementNamed(context, '/');
+
+    String? data = await SecureStorage().readSecureData('user.data');
+    if (data != null) {
+      if (mounted) Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+    }
+    else {
+      if (mounted) Navigator.pushReplacementNamed(context, '/');
+    }
   }
 
   @override
