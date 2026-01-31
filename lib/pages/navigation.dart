@@ -23,11 +23,21 @@ class _NavigationState extends State<Navigation> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[50],
-      body: [Home(), Catalog(), Projects(), Profile()][_currentIndex],
+      body: [Home(
+        navigate: (int index, String query) => setState(() => _currentIndex = index)
+      ), Catalog(
+        navigate: (int index) => setState(() => _currentIndex = index)
+      ), Projects(), Profile()][_currentIndex],
       bottomNavigationBar: BottomAppBar(
         padding: EdgeInsets.all(0),
         color: Colors.white,

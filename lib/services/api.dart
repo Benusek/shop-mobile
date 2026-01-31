@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:mobile/models/new.dart';
+import 'package:mobile/models/product.dart';
 import 'package:mobile/services/secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -49,5 +50,26 @@ class Api {
     } on Exception catch (error) {
       print(error);
     }
+  }
+
+  Future<List<Product>> getOrders(String? gender, String? query) async {
+    var builder = supabase.from('products').select();
+    if (gender != null) {
+      builder = builder.eq('gender', gender);
+    }
+    if (query != null) {
+      builder = builder.ilike('title', '%$query%');
+    }
+
+    final response = await builder;
+
+    List<Product> products = response.map((json) => Product.fromJson(json)).toList();
+    return products;
+  }
+
+  Future<List<New>> getNews() async {
+    final PostgrestList response = await supabase.from('news').select();
+    List<New> news = response.map((json) => New.fromJson(json)).toList();
+    return news;
   }
 }
