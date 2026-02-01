@@ -68,8 +68,14 @@ class Api {
   }
 
   Future<List<New>> getNews() async {
-    final PostgrestList response = await supabase.from('news').select();
-    List<New> news = response.map((json) => New.fromJson(json)).toList();
+    late List<New> news;
+    try {
+      final PostgrestList response = await supabase.from('news').select();
+      news = response.map((json) => New.fromJson(json)).toList();
+    } catch (ERR) {
+      print(ERR);
+    }
+
     return news;
   }
 }

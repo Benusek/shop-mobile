@@ -14,6 +14,7 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> {
   int _currentIndex = 0;
+  String? query;
 
   List<Map<String, dynamic>> items = [
     {'title': 'Главная', 'icon': Icons.home_outlined},
@@ -34,8 +35,13 @@ class _NavigationState extends State<Navigation> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[50],
       body: [Home(
-        navigate: (int index, String query) => setState(() => _currentIndex = index)
-      ), Catalog(
+        navigate: (int index, String value) {
+          setState(() {
+            query = value;
+            _currentIndex = index;
+          });
+      }), Catalog(
+        query: query,
         navigate: (int index) => setState(() => _currentIndex = index)
       ), Projects(), Profile()][_currentIndex],
       bottomNavigationBar: BottomAppBar(

@@ -6,8 +6,9 @@ import '../models/product.dart';
 
 class Catalog extends StatefulWidget {
   final Function(int) navigate;
+  final String? query;
 
-  const Catalog({super.key, required this.navigate});
+  const Catalog({super.key, required this.navigate, this.query});
 
   @override
   State<Catalog> createState() => _CatalogState();
@@ -23,12 +24,15 @@ class _CatalogState extends State<Catalog> {
     {'title': 'Мужчинам', 'code': 'male'},
   ];
   int selectedCategory = 0;
-  String? query;
+  Future<void>? _future;
 
   @override
   void initState() {
     super.initState();
-    getData(null, null);
+    if (widget.query != null) {
+      _searchController.text = widget.query!;
+    }
+    _future = getData(null, widget.query);
   }
 
   Future<void> getData(String? category, String? query) async {
@@ -38,7 +42,7 @@ class _CatalogState extends State<Catalog> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getData(categories[selectedCategory]['code'], _searchController.text),
+      future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -59,7 +63,10 @@ class _CatalogState extends State<Catalog> {
                         labelText: 'Искать описания',
                         controller: _searchController,
                         prefix: Icon(Icons.search),
-                        submitted: (value) => setState(() => _searchController.text = value!),
+                        submitted: (value) {
+                          setState(() => _searchController.text = value!);
+                          _future = getData(categories[selectedCategory]['code'], _searchController.text);
+                        },
                         suffix: _searchController.text.isNotEmpty
                             ? IconButton(
                                 icon: Icon(Icons.close),
@@ -83,7 +90,10 @@ class _CatalogState extends State<Catalog> {
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (BuildContext context, int index) {
                       return Category(
-                        func: () => setState(() => selectedCategory = index),
+                        func: () {
+                          setState(() => selectedCategory = index);
+                          _future = getData(categories[selectedCategory]['code'], _searchController.text);
+                        },
                         title: categories[index]['title'],
                         isSelected: index == selectedCategory ? true : false,
                       );
@@ -104,6 +114,7 @@ class _CatalogState extends State<Catalog> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: CardOrder(
+                            cardFunc: () => print('hello, me is order'),
                             gender: cards[index].gender,
                             title: cards[index].title,
                             price: '${cards[index].price} ₽',

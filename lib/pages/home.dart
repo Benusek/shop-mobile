@@ -60,11 +60,13 @@ class _HomeState extends State<Home> {
                   controller: _searchController,
                   prefix: Icon(Icons.search),
                   submitted: (value) => widget.navigate(1, value!),
-                  changed: (value) => setState(() => _searchController.text = value!),
+                  changed: (value) =>
+                      setState(() => _searchController.text = value!),
                   suffix: _searchController.text.isNotEmpty
                       ? IconButton(
                           icon: Icon(Icons.close),
-                          onPressed: () => setState(() => _searchController.clear()),
+                          onPressed: () =>
+                              setState(() => _searchController.clear()),
                         )
                       : null,
                 ),
@@ -78,9 +80,11 @@ class _HomeState extends State<Home> {
                     itemCount: news.length,
                     itemBuilder: (context, index) {
                       return PromoCard(
-                        price: '4000 ₽',
-                        title: 'Шорты\nВторник',
-                        image: 'assets/vaccine.png',
+                        price: news[index].price ?? null,
+                        title: news[index].title,
+                        image: news[index].image != null
+                            ? 'assets/${news[index].image}'
+                            : null,
                       );
                     },
                   ),
@@ -98,7 +102,9 @@ class _HomeState extends State<Home> {
                       return Category(
                         func: () => setState(() {
                           selectedCategory = index;
-                          _future = getData(categories[selectedCategory]['code']);
+                          _future = getData(
+                            categories[selectedCategory]['code'],
+                          );
                         }),
                         title: categories[index]['title'],
                         isSelected: index == selectedCategory ? true : false,
@@ -120,6 +126,93 @@ class _HomeState extends State<Home> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: CardOrder(
+                            cardFunc: () => showModalBottomSheet(
+                              backgroundColor: Colors.white,
+                              context: context,
+                              builder: (context) => SizedBox(
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    20,
+                                    24,
+                                    20,
+                                    40,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Heading(text: cards[index].title),
+                                          IconButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            icon: Icon(Icons.close),
+                                            style: IconButton.styleFrom(
+                                              backgroundColor:
+                                                  Colors.grey.shade50,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        'Описание',
+                                        style: TextStyle(
+                                          color: Color(0xFF939396),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8),
+                                      Text(cards[index].description),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'Примерный расход',
+                                        style: TextStyle(
+                                          color: Color(0xFF939396),
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${cards[index].weight} г',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20),
+                                      SizedBox(
+                                        height: 56,
+                                        width: double.infinity,
+                                        child: FilledButton(
+                                          onPressed: () => print('Добавлено'),
+                                          style: FilledButton.styleFrom(
+                                            backgroundColor: Colors.blueAccent,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadiusGeometry.circular(
+                                                    10,
+                                                  ),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            'Добавить за ${cards[index].price} ₽',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 17,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                             gender: cards[index].gender,
                             title: cards[index].title,
                             price: '${cards[index].price} ₽',

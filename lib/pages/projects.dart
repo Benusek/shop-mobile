@@ -36,6 +36,7 @@ class _ProjectsState extends State<Projects> {
                   return SizedBox(
                     width: double.infinity,
                     child: CardProject(
+                      cardFunc: () => print('hi, me is card'),
                       func: () {},
                       buttonTitle: 'Открыть',
                     ),
