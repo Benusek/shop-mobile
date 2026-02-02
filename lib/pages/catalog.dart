@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide BottomSheet;
 import 'package:mobile/services/api.dart';
 import 'package:ui/ui.dart';
 
@@ -17,6 +17,7 @@ class Catalog extends StatefulWidget {
 class _CatalogState extends State<Catalog> {
   final TextEditingController _searchController = TextEditingController();
   late List<Product> cards;
+
   //TODO: Duplicate written
   final List<Map<String, dynamic>> categories = [
     {'title': 'Все', 'code': null},
@@ -65,7 +66,10 @@ class _CatalogState extends State<Catalog> {
                         prefix: Icon(Icons.search),
                         submitted: (value) {
                           setState(() => _searchController.text = value!);
-                          _future = getData(categories[selectedCategory]['code'], _searchController.text);
+                          _future = getData(
+                            categories[selectedCategory]['code'],
+                            _searchController.text,
+                          );
                         },
                         suffix: _searchController.text.isNotEmpty
                             ? IconButton(
@@ -92,7 +96,10 @@ class _CatalogState extends State<Catalog> {
                       return Category(
                         func: () {
                           setState(() => selectedCategory = index);
-                          _future = getData(categories[selectedCategory]['code'], _searchController.text);
+                          _future = getData(
+                            categories[selectedCategory]['code'],
+                            _searchController.text,
+                          );
                         },
                         title: categories[index]['title'],
                         isSelected: index == selectedCategory ? true : false,
@@ -106,23 +113,75 @@ class _CatalogState extends State<Catalog> {
                 SizedBox(height: 20),
                 //TODO: Move category list to package of components
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: cards.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return SizedBox(
-                        width: double.infinity,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: CardOrder(
-                            cardFunc: () => print('hello, me is order'),
-                            gender: cards[index].gender,
-                            title: cards[index].title,
-                            price: '${cards[index].price} ₽',
-                            added: true,
+                  child: Stack(
+                    children: [
+                      ListView.builder(
+                        itemCount: cards.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final Product card = cards[index];
+                          return SizedBox(
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 16.0,
+                              ),
+                              child: CardOrder(
+                                cardFunc: () => showModalBottomSheet(
+                                  backgroundColor: Colors.white,
+                                  context: context,
+                                  builder: (context) {
+                                    return BottomSheet(
+                                      title: card.title,
+                                      description: card.description,
+                                      weight: card.weight,
+                                      price: card.price,
+                                    );
+                                  },
+                                ),
+                                gender: card.gender,
+                                title: card.title,
+                                price: '${card.price} ₽',
+                                added: true,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      Positioned(
+                        right: 0,
+                        left: 0,
+                        bottom: 32,
+                        child: SizedBox(
+                          height: 56,
+                          child: FilledButton(
+                            onPressed: () => Navigator.of(context).pushNamed('/cart'),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.blueAccent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)
+                              ),
+                              textStyle: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600
+                              )
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.shopping_cart_outlined),
+                                    SizedBox(width: 16),
+                                    Text('В корзину'),
+                                  ],
+                                ),
+                                Text('1999 Р')
+                              ],
+                            ),
                           ),
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ),
               ],

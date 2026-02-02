@@ -1,6 +1,6 @@
 class Product {
   final String title;
-  final int price;
+  final String price;
   final String gender;
   final String description;
   final String weight;
@@ -15,11 +15,11 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> data) {
     return Product(
-      title: data['title'] as String,
-      price: data['price'] as int,
-      gender: data['gender'] as String,
+      title: data['title'],
+      price: data['price'].toString(),
+      gender: data['gender'],
       weight: data['weight'].toString(),
-      description: data['description'] as String,
+      description: data['description'],
     );
   }
 }

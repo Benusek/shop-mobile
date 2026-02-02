@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide BottomSheet;
 import 'package:mobile/models/new.dart';
 import 'package:mobile/services/api.dart';
 import 'package:ui/ui.dart';
@@ -80,11 +80,9 @@ class _HomeState extends State<Home> {
                     itemCount: news.length,
                     itemBuilder: (context, index) {
                       return PromoCard(
-                        price: news[index].price ?? null,
+                        price: news[index].price,
                         title: news[index].title,
-                        image: news[index].image != null
-                            ? 'assets/${news[index].image}'
-                            : null,
+                        image: news[index].image,
                       );
                     },
                   ),
@@ -129,89 +127,15 @@ class _HomeState extends State<Home> {
                             cardFunc: () => showModalBottomSheet(
                               backgroundColor: Colors.white,
                               context: context,
-                              builder: (context) => SizedBox(
-                                child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    20,
-                                    24,
-                                    20,
-                                    40,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Heading(text: cards[index].title),
-                                          IconButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            icon: Icon(Icons.close),
-                                            style: IconButton.styleFrom(
-                                              backgroundColor:
-                                                  Colors.grey.shade50,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'Описание',
-                                        style: TextStyle(
-                                          color: Color(0xFF939396),
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      SizedBox(height: 8),
-                                      Text(cards[index].description),
-                                      SizedBox(height: 8),
-                                      Text(
-                                        'Примерный расход',
-                                        style: TextStyle(
-                                          color: Color(0xFF939396),
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      Text(
-                                        '${cards[index].weight} г',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      SizedBox(height: 20),
-                                      SizedBox(
-                                        height: 56,
-                                        width: double.infinity,
-                                        child: FilledButton(
-                                          onPressed: () => print('Добавлено'),
-                                          style: FilledButton.styleFrom(
-                                            backgroundColor: Colors.blueAccent,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadiusGeometry.circular(
-                                                    10,
-                                                  ),
-                                            ),
-                                          ),
-                                          child: Text(
-                                            'Добавить за ${cards[index].price} ₽',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 17,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                              builder: (context) {
+                                final Product card = cards[index];
+                                return BottomSheet(
+                                  title: card.title,
+                                  description: card.description,
+                                  weight: card.weight,
+                                  price: card.price,
+                                );
+                              },
                             ),
                             gender: cards[index].gender,
                             title: cards[index].title,

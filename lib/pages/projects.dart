@@ -30,21 +30,21 @@ class _ProjectsState extends State<Projects> {
             ),
             SizedBox(height: 36),
             Expanded(
-              child: ListView.separated(
+              child: ListView.builder(
                 itemCount: 3,
                 itemBuilder: (BuildContext context, int index) {
-                  return SizedBox(
-                    width: double.infinity,
-                    child: CardProject(
-                      cardFunc: () => print('hi, me is card'),
-                      func: () {},
-                      buttonTitle: 'Открыть',
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: CardProject(
+                        cardFunc: () => print('hi, me is card'),
+                        func: () {},
+                        buttonTitle: 'Открыть',
+                      ),
                     ),
                   );
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return SizedBox(height: 16);
-                },
+                }
               ),
             )
           ],

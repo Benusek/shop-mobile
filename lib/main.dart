@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/pages/cart.dart';
 import 'package:mobile/pages/create_password.dart';
 import 'package:mobile/pages/auth.dart';
 import 'package:mobile/pages/navigation.dart';
@@ -13,7 +14,8 @@ void main() {
       '/register': (context) => Register(),
       '/password': (context) => CreatePassword(),
       '/splash': (context) => Splash(),
-      '/home': (context) => Navigation()
+      '/home': (context) => Navigation(),
+      '/cart': (context) => Cart()
     },
   ));
 }
