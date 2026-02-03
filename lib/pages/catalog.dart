@@ -123,7 +123,7 @@ class _CatalogState extends State<Catalog> {
                             width: double.infinity,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                vertical: 16.0,
+                                vertical: 6.0,
                               ),
                               child: CardOrder(
                                 cardFunc: () => showModalBottomSheet(

@@ -1,7 +1,7 @@
 class Product {
   final String id;
   final String title;
-  final String price;
+  final int price;
   final String gender;
   final String description;
   final String weight;
@@ -19,7 +19,7 @@ class Product {
     return Product(
       id: data['id'],
       title: data['title'],
-      price: data['price'].toString(),
+      price: data['price'],
       gender: data['gender'],
       weight: data['weight'].toString(),
       description: data['description'],

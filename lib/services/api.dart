@@ -1,16 +1,16 @@
 import 'dart:convert';
 
 import 'package:mobile/models/user.dart';
-import 'package:mobile/models/cart.dart';
+import 'package:mobile/models/product_cart.dart';
 import 'package:mobile/models/new.dart';
 import 'package:mobile/models/product.dart';
-import 'package:mobile/pages/cart.dart';
 import 'package:mobile/services/secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 class Api {
   final supabase = Supabase.instance.client;
   final secureStorage = SecureStorage();
+
   Future<dynamic>? auth(String email, String pass) async {
     try {
       final AuthResponse res = await supabase.auth.signInWithPassword(
@@ -23,7 +23,6 @@ class Api {
 
       await secureStorage.writeSecureData('token', session!.accessToken);
       await secureStorage.writeSecureData('user.data', jsonEncode(user));
-
     } on AuthException catch (error) {
       print(error.message);
     }
@@ -34,7 +33,11 @@ class Api {
     secureStorage.deleteAllData();
   }
 
-  void register(Map <String, dynamic> data, String email, String password) async {
+  void register(
+    Map<String, dynamic> data,
+    String email,
+    String password,
+  ) async {
     print(data);
     print(email);
     print(password);
@@ -66,7 +69,9 @@ class Api {
 
     final response = await builder;
 
-    List<Product> products = response.map((json) => Product.fromJson(json)).toList();
+    List<Product> products = response
+        .map((json) => Product.fromJson(json))
+        .toList();
     return products;
   }
 
@@ -76,12 +81,31 @@ class Api {
     return news;
   }
 
-  //List<Cart>
-  Future<void> getCart() async {
-    final PostgrestList response = await supabase.from('cart').select('count, products(title, price, gender, description, weight)');
-    final List<Carts> carts = response.map((json) => Carts.fromJson(json)).toList();
-    print(response);
-    // return carts;
+  Future<List<ProductCart>> getCart() async {
+    final PostgrestList response = await supabase
+        .from('cart')
+        .select(
+          'count, products(id, title, price, gender, description, weight)',
+        );
+    final List<ProductCart> carts = response
+        .map((json) => ProductCart.fromJson(json))
+        .toList();
+    return carts;
+  }
+
+  Future<void> updateCart(ProductCart product, bool plus) async {
+    SecureStorage storage = SecureStorage();
+    final String? str = await storage.readSecureData('user.data');
+    if (str != null) {
+      if (product.count > 1 || product.count < 2 && plus) {
+        final User user = User.fromJson(json.decode(str));
+        await supabase
+            .from('cart')
+            .update({'count': plus ? product.count + 1 : product.count - 1})
+            .match({'product_id': product.id, 'user_id': user.id})
+            .select().single();
+      }
+    }
   }
 
   Future<void> storeCart(Map<String, dynamic> data) async {

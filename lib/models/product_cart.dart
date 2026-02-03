@@ -1,9 +1,9 @@
 import 'product.dart';
 
-class Carts extends Product {
-  final String count;
+class ProductCart extends Product {
+  final int count;
 
-  Carts({
+  ProductCart({
     required super.id,
     required super.title,
     required super.price,
@@ -13,14 +13,14 @@ class Carts extends Product {
     required this.count,
   });
 
-  factory Carts.fromJson(Map <String, dynamic> data) {
+  factory ProductCart.fromJson(Map <String, dynamic> data) {
     final obj = data['products'];
-    return Carts(
+    return ProductCart(
       id: obj['id'],
       title: obj['title'],
       price: obj['price'],
       gender: obj['gender'],
-      weight: obj['weight'],
+      weight: obj['weight'].toString(),
       description: obj['description'],
       count: data['count']
     );
