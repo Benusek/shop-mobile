@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/services/api.dart';
 import 'package:ui/ui.dart';
 
 class Cart extends StatefulWidget {
@@ -9,6 +10,13 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
+  @override
+  void initState() {
+    super.initState();
+    Api().getCart();
+    // Api().storeCart();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,98 +56,7 @@ class _CartState extends State<Cart> {
                 child: ListView.builder(
                   itemCount: 10,
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: CardBackground(
-                        component: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  width: 200,
-                                  child: Text(
-                                    'Рубашка воскресенье для машинного дизайна',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.close),
-                                  onPressed: () {},
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '300 ₽',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                IntrinsicHeight(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        '1 штука',
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                      SizedBox(width: 42),
-                                      RawMaterialButton(
-                                        materialTapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        constraints: BoxConstraints(
-                                          minWidth: 32.0,
-                                          minHeight: 32.0,
-                                        ),
-                                        onPressed: () {},
-                                        elevation: 0,
-                                        fillColor: Colors.grey[100],
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(10),
-                                            bottomLeft: Radius.circular(10)
-                                          ),
-                                        ),
-                                        child: Icon(Icons.add, size: 20.0),
-                                      ),
-                                      VerticalDivider(color: Colors.grey[100], thickness: 1, width: 0.5),
-                                      RawMaterialButton(
-                                        materialTapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                        constraints: BoxConstraints(
-                                          minWidth: 32.0,
-                                          minHeight: 32.0,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(10),
-                                              bottomRight: Radius.circular(10)
-                                          ),
-                                        ),
-                                        onPressed: () {},
-                                        elevation: 0,
-                                        fillColor: Colors.grey[100],
-                                        child: Icon(Icons.remove, size: 20.0),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        func: () {},
-                      ),
-                    );
+                    return CartCard();
                   },
                 ),
               ),

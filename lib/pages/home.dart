@@ -30,8 +30,9 @@ class _HomeState extends State<Home> {
   late List<New> news;
 
   Future<void> getData(String? category) async {
-    cards = await Api().getOrders(category, null);
-    news = await Api().getNews();
+    Api service = Api();
+    cards = await service.getProducts(category, null);
+    news = await service.getNews();
   }
 
   @override

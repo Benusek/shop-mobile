@@ -37,7 +37,7 @@ class _CatalogState extends State<Catalog> {
   }
 
   Future<void> getData(String? category, String? query) async {
-    cards = await Api().getOrders(category, query);
+    cards = await Api().getProducts(category, query);
   }
 
   @override

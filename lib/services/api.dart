@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:mobile/models/user.dart';
+import 'package:mobile/models/cart.dart';
 import 'package:mobile/models/new.dart';
 import 'package:mobile/models/product.dart';
+import 'package:mobile/pages/cart.dart';
 import 'package:mobile/services/secure_storage.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 class Api {
   final supabase = Supabase.instance.client;
@@ -52,7 +55,7 @@ class Api {
     }
   }
 
-  Future<List<Product>> getOrders(String? gender, String? query) async {
+  Future<List<Product>> getProducts(String? gender, String? query) async {
     var builder = supabase.from('products').select();
     if (gender != null) {
       builder = builder.eq('gender', gender);
@@ -68,14 +71,26 @@ class Api {
   }
 
   Future<List<New>> getNews() async {
-    late List<New> news;
-    try {
-      final PostgrestList response = await supabase.from('news').select();
-      news = response.map((json) => New.fromJson(json)).toList();
-    } catch (ERR) {
-      print(ERR);
-    }
-
+    final PostgrestList response = await supabase.from('news').select();
+    final List<New> news = response.map((json) => New.fromJson(json)).toList();
     return news;
+  }
+
+  //List<Cart>
+  Future<void> getCart() async {
+    final PostgrestList response = await supabase.from('cart').select('count, products(title, price, gender, description, weight)');
+    final List<Carts> carts = response.map((json) => Carts.fromJson(json)).toList();
+    print(response);
+    // return carts;
+  }
+
+  Future<void> storeCart(Map<String, dynamic> data) async {
+    SecureStorage storage = SecureStorage();
+    final String? str = await storage.readSecureData('user.data');
+    if (str != null) {
+      final User user = User.fromJson(json.decode(str));
+      final response = await supabase.from('cart').insert(data);
+      print(response);
+    }
   }
 }
