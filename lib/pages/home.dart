@@ -17,6 +17,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final TextEditingController _searchController = TextEditingController();
   late Future<void> _future;
+  final Api service = Api();
   int selectedCategory = 0;
 
   //TODO: Duplicate written
@@ -30,10 +31,26 @@ class _HomeState extends State<Home> {
   late List<New> news;
 
   Future<void> getData(String? category) async {
-    Api service = Api();
+
     cards = await service.getProducts(category, null);
     news = await service.getNews();
   }
+
+  Future<void> storeProductCart(Product product) async {
+    await service.storeProductCart(product);
+    // refreshPage();
+  }
+
+  Future<void> removeProductCart(Product product) async {
+    await service.deleteProductCart(product);
+    // refreshPage();
+  }
+
+  // void refreshPage() {
+  //   setState(() {
+  //     _future = getData(categories[selectedCategory]['code']);
+  //   });
+  // }
 
   @override
   void initState() {
@@ -125,6 +142,7 @@ class _HomeState extends State<Home> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: CardOrder(
+                            buttonFunc: cards[index].added ? removeProductCart(cards[index]) : storeProductCart(cards[index]),
                             cardFunc: () => showModalBottomSheet(
                               backgroundColor: Colors.white,
                               context: context,
@@ -141,7 +159,7 @@ class _HomeState extends State<Home> {
                             gender: cards[index].gender,
                             title: cards[index].title,
                             price: '${cards[index].price} ₽',
-                            added: true,
+                            added: cards[index].added,
                           ),
                         ),
                       );

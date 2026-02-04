@@ -30,11 +30,20 @@ class _CartState extends State<Cart> {
     }
   }
 
-  Future<void> changeCounter(ProductCart product, bool plus) async {
-    await service.updateCart(product, plus);
+  void refreshPage() {
     setState(() {
       _future = getData();
     });
+  }
+
+  Future<void> deleteCart() async {
+    await service.deleteAllCart();
+    refreshPage();
+  }
+
+  Future<void> changeCounter(ProductCart product, bool plus) async {
+    await service.updateCart(product, plus);
+    refreshPage();
   }
 
   @override
@@ -75,7 +84,7 @@ class _CartState extends State<Cart> {
                     children: [
                       Heading(text: 'Корзина'),
                       IconButton(
-                        onPressed: () => print('Удаление всех'),
+                        onPressed: () => deleteCart(),
                         color: Colors.grey,
                         icon: Icon(Icons.restore_from_trash_outlined),
                       ),

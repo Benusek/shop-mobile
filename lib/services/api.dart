@@ -72,7 +72,55 @@ class Api {
     List<Product> products = response
         .map((json) => Product.fromJson(json))
         .toList();
+
+    SecureStorage storage = SecureStorage();
+    final String? str = await storage.readSecureData('user.data');
+    if (str != null) {
+      final User user = User.fromJson(json.decode(str));
+      final response = await supabase
+          .from('cart')
+          .select(
+            'count, products (id, title, price, gender, description, weight)',
+          )
+          .eq('user_id', user.id);
+      late List carts = response
+          .map((json) => ProductCart.fromJson(json))
+          .toList();
+
+      carts = carts.map((json) => json.id).toList();
+      // products = products.map((product) => product.adding());
+      for (var value in products) {
+        if (carts.contains(value.id)) {
+          value.adding();
+        }
+      }
+    }
     return products;
+  }
+
+  Future<void> storeProductCart(Product product) async {
+    SecureStorage storage = SecureStorage();
+    final String? str = await storage.readSecureData('user.data');
+    if (str != null) {
+      final User user = User.fromJson(json.decode(str));
+      await supabase.from('cart').insert({
+        'user_id': user.id,
+        'product_id': product.id,
+        'count': 1,
+      });
+    }
+  }
+
+  Future<void> deleteProductCart(Product product) async {
+    SecureStorage storage = SecureStorage();
+    final String? str = await storage.readSecureData('user.data');
+    if (str != null) {
+      final User user = User.fromJson(json.decode(str));
+      await supabase.from('cart').delete().match({
+        'user_id': user.id,
+        'product_id': product.id,
+      });
+    }
   }
 
   Future<List<New>> getNews() async {
@@ -103,8 +151,18 @@ class Api {
             .from('cart')
             .update({'count': plus ? product.count + 1 : product.count - 1})
             .match({'product_id': product.id, 'user_id': user.id})
-            .select().single();
+            .select()
+            .single();
       }
+    }
+  }
+
+  Future<void> deleteAllCart() async {
+    SecureStorage storage = SecureStorage();
+    final String? str = await storage.readSecureData('user.data');
+    if (str != null) {
+      final User user = User.fromJson(json.decode(str));
+      await supabase.from('cart').delete().eq('user_id', user.id);
     }
   }
 

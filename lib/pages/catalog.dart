@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' hide BottomSheet;
 import 'package:mobile/services/api.dart';
 import 'package:ui/ui.dart';
-
 import '../models/product.dart';
 
 class Catalog extends StatefulWidget {
@@ -17,6 +16,8 @@ class Catalog extends StatefulWidget {
 class _CatalogState extends State<Catalog> {
   final TextEditingController _searchController = TextEditingController();
   late List<Product> cards;
+  late int sum = 0;
+  final Api service = Api();
 
   //TODO: Duplicate written
   final List<Map<String, dynamic>> categories = [
@@ -37,8 +38,30 @@ class _CatalogState extends State<Catalog> {
   }
 
   Future<void> getData(String? category, String? query) async {
-    cards = await Api().getProducts(category, query);
+    cards = await service.getProducts(category, query);
+
+    for (var value in cards) {
+      if (value.added) {
+        sum += value.price;
+      }
+    }
   }
+
+  Future<void> storeProductCart(Product product) async {
+    await service.storeProductCart(product);
+    // refreshPage();
+  }
+
+  Future<void> removeProductCart(Product product) async {
+    await service.deleteProductCart(product);
+    // refreshPage();
+  }
+
+  // void refreshPage() {
+  //   setState(() {
+  //     _future = getData(categories[selectedCategory]['code'], widget.query);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -126,6 +149,7 @@ class _CatalogState extends State<Catalog> {
                                 vertical: 6.0,
                               ),
                               child: CardOrder(
+                                buttonFunc: removeProductCart(cards[index]),
                                 cardFunc: () => showModalBottomSheet(
                                   backgroundColor: Colors.white,
                                   context: context,
@@ -141,13 +165,13 @@ class _CatalogState extends State<Catalog> {
                                 gender: card.gender,
                                 title: card.title,
                                 price: '${card.price} ₽',
-                                added: true,
+                                added: card.added,
                               ),
                             ),
                           );
                         },
                       ),
-                      Positioned(
+                      ?sum != 0 ? Positioned(
                         right: 0,
                         left: 0,
                         bottom: 32,
@@ -175,12 +199,12 @@ class _CatalogState extends State<Catalog> {
                                     Text('В корзину'),
                                   ],
                                 ),
-                                Text('1999 Р')
+                                Text('$sum ₽')
                               ],
                             ),
                           ),
                         ),
-                      ),
+                      ):null,
                     ],
                   ),
                 ),

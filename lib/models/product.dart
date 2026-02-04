@@ -5,6 +5,7 @@ class Product {
   final String gender;
   final String description;
   final String weight;
+  bool added;
 
   Product({
     required this.id,
@@ -13,6 +14,7 @@ class Product {
     required this.gender,
     required this.weight,
     required this.description,
+    this.added = false
   });
 
   factory Product.fromJson(Map<String, dynamic> data) {
@@ -24,5 +26,9 @@ class Product {
       weight: data['weight'].toString(),
       description: data['description'],
     );
+  }
+
+  void adding() {
+    added = true;
   }
 }
