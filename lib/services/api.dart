@@ -34,10 +34,10 @@ class Api {
   }
 
   void register(
-    Map<String, dynamic> data,
-    String email,
-    String password,
-  ) async {
+      Map<String, dynamic> data,
+      String email,
+      String password,
+      ) async {
     print(data);
     print(email);
     print(password);
@@ -66,33 +66,22 @@ class Api {
     if (query != null) {
       builder = builder.ilike('title', '%$query%');
     }
-
     final response = await builder;
-
-    List<Product> products = response
+    final List<Product> products = response
         .map((json) => Product.fromJson(json))
         .toList();
 
-    SecureStorage storage = SecureStorage();
-    final String? str = await storage.readSecureData('user.data');
-    if (str != null) {
-      final User user = User.fromJson(json.decode(str));
-      final response = await supabase
-          .from('cart')
-          .select(
-            'count, products (id, title, price, gender, description, weight)',
-          )
-          .eq('user_id', user.id);
-      late List carts = response
-          .map((json) => ProductCart.fromJson(json))
-          .toList();
+    final PostgrestList responseCart = await supabase
+        .from('cart')
+        .select('count, products(id, title, price, gender, description, weight)');
+    final List<ProductCart> carts = responseCart
+        .map((json) => ProductCart.fromJson(json))
+        .toList();
 
-      carts = carts.map((json) => json.id).toList();
-      // products = products.map((product) => product.adding());
-      for (var value in products) {
-        if (carts.contains(value.id)) {
-          value.adding();
-        }
+    final List<String> ids = carts.map((obj)=> obj.id).toList();
+    for (var value in products) {
+      if (ids.contains(value.id)) {
+        value.added = true;
       }
     }
     return products;
@@ -133,8 +122,8 @@ class Api {
     final PostgrestList response = await supabase
         .from('cart')
         .select(
-          'count, products(id, title, price, gender, description, weight)',
-        );
+      'count, products(id, title, price, gender, description, weight)',
+    );
     final List<ProductCart> carts = response
         .map((json) => ProductCart.fromJson(json))
         .toList();

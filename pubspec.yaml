@@ -32,6 +32,9 @@ dependencies:
     sdk: flutter
   ui:
     path: ../ui
+  network:
+    path: ../network
+  flutter_local_notifications: any
   supabase_flutter: any
   flutter_secure_storage: any
 

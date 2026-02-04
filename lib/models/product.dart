@@ -27,8 +27,4 @@ class Product {
       description: data['description'],
     );
   }
-
-  void adding() {
-    added = true;
-  }
 }

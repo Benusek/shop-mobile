@@ -28,40 +28,42 @@ class _CatalogState extends State<Catalog> {
   int selectedCategory = 0;
   Future<void>? _future;
 
+  Future<void> gg() async {}
+
   @override
   void initState() {
     super.initState();
     if (widget.query != null) {
       _searchController.text = widget.query!;
     }
-    _future = getData(null, widget.query);
+    _future = getData(null, _searchController.text);
   }
 
   Future<void> getData(String? category, String? query) async {
     cards = await service.getProducts(category, query);
-
+    sum = 0;
     for (var value in cards) {
       if (value.added) {
+        print(value.id);
         sum += value.price;
       }
     }
   }
 
-  Future<void> storeProductCart(Product product) async {
-    await service.storeProductCart(product);
-    // refreshPage();
+  Future<void> changeProductCart(Product product) async {
+    if (product.added) {
+      await service.deleteProductCart(product);
+    } else {
+      await service.storeProductCart(product);
+    }
+    refreshPage();
   }
 
-  Future<void> removeProductCart(Product product) async {
-    await service.deleteProductCart(product);
-    // refreshPage();
+  void refreshPage() {
+    setState(() {
+      _future = getData(categories[selectedCategory]['code'], widget.query);
+    });
   }
-
-  // void refreshPage() {
-  //   setState(() {
-  //     _future = getData(categories[selectedCategory]['code'], widget.query);
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +151,7 @@ class _CatalogState extends State<Catalog> {
                                 vertical: 6.0,
                               ),
                               child: CardOrder(
-                                buttonFunc: removeProductCart(cards[index]),
+                                buttonFunc: () => changeProductCart(cards[index]),
                                 cardFunc: () => showModalBottomSheet(
                                   backgroundColor: Colors.white,
                                   context: context,
@@ -159,6 +161,11 @@ class _CatalogState extends State<Catalog> {
                                       description: card.description,
                                       weight: card.weight,
                                       price: card.price,
+                                      added: card.added,
+                                      buttonFunc: () {
+                                        changeProductCart(cards[index]);
+                                        Navigator.pop(context);
+                                      }
                                     );
                                   },
                                 ),

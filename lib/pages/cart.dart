@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:mobile/models/product.dart';
 import 'package:mobile/services/api.dart';
 import 'package:mobile/services/secure_storage.dart';
 import 'package:ui/ui.dart';
@@ -28,6 +29,11 @@ class _CartState extends State<Cart> {
     for (var value in carts) {
       counter += value.price * value.count;
     }
+  }
+  
+  Future<void> removeCart(Product product) async {
+    await service.deleteProductCart(product);
+    refreshPage();
   }
 
   void refreshPage() {
@@ -101,6 +107,7 @@ class _CartState extends State<Cart> {
                           title: cart.title,
                           price: cart.price,
                           count: cart.count,
+                          deleteFunc: () => removeCart(cart),
                           plusFunc: () => changeCounter(cart, true),
                           minusFunc: () => changeCounter(cart, false),
                         );
