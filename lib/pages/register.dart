@@ -3,7 +3,7 @@ import 'package:ui/ui.dart';
 import 'package:mobile/services/api.dart';
 import 'package:mobile/models/user.dart';
 
-import '../presentaions/forms/form_field_config.dart';
+import '../presentations/forms/form_field_config.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -16,18 +16,18 @@ class _RegisterState extends State<Register> {
   final GlobalKey<FormState> _formGlobalKey = GlobalKey<FormState>() ;
   Gender? _selectedGender;
   final fields = [
-    FormFieldConfig(code: 'firstname', label: 'Имя'),
-    FormFieldConfig(code: 'lastname', label: 'Фамилия'),
-    FormFieldConfig(code: 'secondname', label: 'Отчество'),
+    FormFieldConfig(code: 'firstname', placeholder: 'Имя'),
+    FormFieldConfig(code: 'lastname', placeholder: 'Фамилия'),
+    FormFieldConfig(code: 'secondname', placeholder: 'Отчество'),
     FormFieldConfig(
       code: 'datebirthday',
-      label: 'Дата рождения',
+      placeholder: 'Дата рождения',
       type: TextInputType.datetime,
     ),
-    FormFieldConfig(code: 'gender', label: 'Пол', isSelect: true),
+    FormFieldConfig(code: 'gender', placeholder: 'Пол', isSelect: true),
     FormFieldConfig(
       code: 'email',
-      label: 'Почта',
+      placeholder: 'Почта',
       type: TextInputType.emailAddress,
     ),
   ];
@@ -79,7 +79,7 @@ class _RegisterState extends State<Register> {
                             : Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           child: Input(
-                            labelText: fields[index].label,
+                            labelText: fields[index].placeholder,
                             keyboardType:
                             fields[index].type ?? TextInputType.text,
                             saved: (value) {

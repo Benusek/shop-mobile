@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ui/ui.dart';
 
 class Projects extends StatefulWidget {
-  const Projects({super.key});
+  final Function(int) navigate;
+  const Projects({super.key, required this.navigate});
 
   @override
   State<Projects> createState() => _ProjectsState();
@@ -23,7 +24,7 @@ class _ProjectsState extends State<Projects> {
                 Expanded(child: Center(child: Heading(text: 'Проекты'))),
                 IconButton(
                   icon: Icon(Icons.add),
-                  onPressed: () {},
+                  onPressed: () => widget.navigate(4),
                   color: Color(0xFFB8C1CC)
                 )
               ],

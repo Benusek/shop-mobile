@@ -2,14 +2,16 @@ import 'package:flutter/cupertino.dart';
 
 class FormFieldConfig {
   final String code;
-  final String label;
+  final String? label;
+  final String placeholder;
   final TextInputType? type;
   final bool isSelect;
   String? value;
 
   FormFieldConfig({
     required this.code,
-    required this.label,
+    this.label,
+    required this.placeholder,
     this.type = TextInputType.text,
     this.isSelect = false,
   });

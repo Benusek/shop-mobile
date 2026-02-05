@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/pages/create_project.dart';
 import 'package:mobile/pages/home.dart';
 import 'package:mobile/pages/catalog.dart';
 import 'package:mobile/pages/profile.dart';
@@ -14,6 +15,7 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> {
   int _currentIndex = 0;
+  int _selectedIndex = 0;
   String? query;
 
   List<Map<String, dynamic>> items = [
@@ -22,12 +24,6 @@ class _NavigationState extends State<Navigation> {
     {'title': 'Проекты', 'icon': Icons.task_outlined},
     {'title': 'Профиль', 'icon': Icons.person_outline},
   ];
-
-  @override
-  void initState() {
-    super.initState();
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +39,15 @@ class _NavigationState extends State<Navigation> {
       }), Catalog(
         query: query,
         navigate: (int index) => setState(() => _currentIndex = index)
-      ), Projects(), Profile()][_currentIndex],
+      ), Projects(
+        navigate: (int index) => setState(() {_currentIndex = 4; _selectedIndex = 2;})
+      ), Profile(), CreateProject()][_currentIndex],
       bottomNavigationBar: BottomAppBar(
         padding: EdgeInsets.all(0),
         color: Colors.white,
         child: TabNavigation(
-          selectedIndex: _currentIndex,
-          func: (index) => setState(() => _currentIndex = index),
+          selectedIndex: _selectedIndex,
+          func: (index) => setState(() {_currentIndex = index; _selectedIndex = index;}),
           items: items,
         ),
       ),
