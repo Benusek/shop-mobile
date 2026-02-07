@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/models/project.dart';
+import 'package:mobile/models/user.dart';
 import 'package:mobile/presentations/forms/form_field_config.dart';
 import 'package:ui/ui.dart';
 
@@ -10,19 +12,65 @@ class CreateProject extends StatefulWidget {
 }
 
 class _CreateProjectState extends State<CreateProject> {
+  DateTime? selectedDate = DateTime.now();
+
   final fields = [
-    FormFieldConfig(code: 'firstname', placeholder: 'Выбирите тип', label: 'Тип'),
-    FormFieldConfig(code: 'lastname', placeholder: 'Введите имя', label: 'Название проекта'),
-    FormFieldConfig(code: 'datestart', placeholder: '--.--.----', label: 'Дата начала'),
-    FormFieldConfig(code: 'dateover', placeholder: '--.--.----', label: 'Дата окончания'),
     FormFieldConfig(
-      code: 'datebirthday',
-      placeholder: 'Выберите кому',
-      isSelect: true, label: 'Кому',
+      code: 'type',
+      placeholder: 'Выбирите тип',
+      label: 'Тип',
+      type: FormFieldType.select,
+      options: ProjectType.values,
     ),
-    FormFieldConfig(code: 'gender', placeholder: 'example.com', isSelect: true, label: 'Источник описания'),
-    FormFieldConfig(code: 'category', placeholder: 'Выберети категорию', isSelect: true, label: 'Категория'),
+    FormFieldConfig(
+      code: 'title',
+      placeholder: 'Введите имя',
+      label: 'Название проекта',
+      type: FormFieldType.text,
+    ),
+    FormFieldConfig(
+      code: 'date_start',
+      placeholder: '--.--.----',
+      label: 'Дата начала',
+      type: FormFieldType.date,
+    ),
+    FormFieldConfig(
+      code: 'date_end',
+      placeholder: '--.--.----',
+      label: 'Дата окончания',
+      type: FormFieldType.date,
+    ),
+    FormFieldConfig(
+      code: 'gender',
+      placeholder: 'Выберите кому',
+      label: 'Кому',
+      type: FormFieldType.select,
+      options: Gender.values,
+    ),
+    FormFieldConfig(
+      code: 'description_source',
+      placeholder: 'example.com',
+      label: 'Источник описания',
+      type: FormFieldType.text,
+    ),
+    FormFieldConfig(
+      code: 'category',
+      placeholder: 'Выберети категорию',
+      label: 'Категория',
+      type: FormFieldType.select,
+      options: ProjectCategory.values,
+    ),
   ];
+
+  Widget buildWithLabel(String label, Widget field) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Label(text: label),
+        field
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,50 +78,70 @@ class _CreateProjectState extends State<CreateProject> {
       backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.fromLTRB(20, 28, 20, 15),
           child: Column(
             children: [
               Heading(text: 'Создать проект'),
+              SizedBox(height: 31),
               Expanded(
-                child: ListView.builder(
-                  itemCount: fields.length,
+                child: ListView.separated(
+                  itemCount: fields.length + 1,
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ?fields[index].label != null ? Label(text: fields[index].label!): null,
-                          Input(
-                            labelText: fields[index].placeholder,
-                            keyboardType: fields[index].type ?? TextInputType.text,
-                            saved: (value) {
-                              print(value);
-                              fields[index].setValue(value!);
-                            },
-                            validator: (value) {
-                              if (value!.isEmpty &&
-                                  ![
-                                    'secondname',
-                                    'lastname',
-                                  ].contains(fields[index].code)) {
-                                return 'This field is required';
-                              }
-                              return null;
-                            },
-                          ),
-                        ],
-                      ),
-                    );
+                    if (index == fields.length) {
+                      return Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          width: 200,
+                          height: 200,
+                          color: Colors.grey.shade200,
+                          child: Icon(Icons.add, color: Colors.grey, size: 125),
+                        ),
+                      );
+                    }
+
+                    final field = fields[index];
+                    switch (field.type) {
+                      case FormFieldType.text:
+                        return buildWithLabel(field.label!, Input(
+                          labelText: field.placeholder,
+                          saved: (value) => field.setValue(value!),
+                        ));
+                      case FormFieldType.select:
+                        return buildWithLabel(field.label!, Select(
+                          label: field.placeholder,
+                          items: field.options!
+                              .map(
+                                (e) => DropdownMenuItem(
+                              value: e,
+                              child: Text(e.title),
+                            ),
+                          ).toList(),
+                          func: (value) => field.setValue(value.code),
+                        ));
+                      case FormFieldType.date:
+                        return buildWithLabel(field.label!, Input(
+                          labelText: field.placeholder,
+                          tap: () async {
+                            final DateTime? dateTime = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime.now(),
+                              initialDate: selectedDate,
+                              lastDate: DateTime(3000),
+                            );
+                            if (dateTime != null) {
+                              setState(() {
+                                selectedDate = dateTime;
+                              });
+                            }
+                          },
+                        ));
+                    }
+                  },
+                  separatorBuilder: (context, index) {
+                    return SizedBox(height: 24);
                   },
                 ),
               ),
-              Container(
-                width: 200,
-                height: 200,
-                color: Colors.grey.shade200,
-                child: Icon(Icons.add, color: Colors.grey, size: 125),
-              )
             ],
           ),
         ),

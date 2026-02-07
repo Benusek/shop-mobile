@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:mobile/models/project.dart';
 import 'package:mobile/models/user.dart';
 import 'package:mobile/models/product_cart.dart';
 import 'package:mobile/models/new.dart';
@@ -163,5 +164,15 @@ class Api {
       final response = await supabase.from('cart').insert(data);
       print(response);
     }
+  }
+
+  Future<List<Project>?> getProject() async {
+    final PostgrestList response = await supabase
+        .from('projects')
+        .select();
+    final List<Project> projects = response
+        .map((json) => Project.fromJson(json))
+        .toList();
+    return projects;
   }
 }

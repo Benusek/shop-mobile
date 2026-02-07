@@ -1,9 +1,9 @@
 enum Gender {
-  men(title: 'Мужской', code: true),
-  woman(title: 'Женский', code: false);
+  men(title: 'Мужской', code: 'male'),
+  woman(title: 'Женский', code: 'female');
 
   final String title;
-  final bool code;
+  final String code;
 
   const Gender({required this.title, required this.code});
 }

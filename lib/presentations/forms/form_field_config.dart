@@ -1,19 +1,23 @@
-import 'package:flutter/cupertino.dart';
+enum FormFieldType {
+  text,
+  date,
+  select
+}
 
 class FormFieldConfig {
   final String code;
   final String? label;
   final String placeholder;
-  final TextInputType? type;
-  final bool isSelect;
-  String? value;
+  final FormFieldType type;
+  final List? options;
+  late String? value;
 
   FormFieldConfig({
     required this.code,
     this.label,
     required this.placeholder,
-    this.type = TextInputType.text,
-    this.isSelect = false,
+    required this.type,
+    this.options
   });
 
   void setValue (String value) {

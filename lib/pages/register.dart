@@ -14,23 +14,34 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   final GlobalKey<FormState> _formGlobalKey = GlobalKey<FormState>() ;
-  Gender? _selectedGender;
+  DateTime? selectedDate = DateTime.now();
+
   final fields = [
-    FormFieldConfig(code: 'firstname', placeholder: 'Имя'),
-    FormFieldConfig(code: 'lastname', placeholder: 'Фамилия'),
-    FormFieldConfig(code: 'secondname', placeholder: 'Отчество'),
+    FormFieldConfig(code: 'firstname', placeholder: 'Имя', type: FormFieldType.text),
+    FormFieldConfig(code: 'lastname', placeholder: 'Фамилия', type: FormFieldType.text),
+    FormFieldConfig(code: 'secondname', placeholder: 'Отчество', type: FormFieldType.text),
     FormFieldConfig(
       code: 'datebirthday',
       placeholder: 'Дата рождения',
-      type: TextInputType.datetime,
+      type: FormFieldType.date
     ),
-    FormFieldConfig(code: 'gender', placeholder: 'Пол', isSelect: true),
+    FormFieldConfig(code: 'gender', placeholder: 'Пол', type: FormFieldType.select, options: Gender.values),
     FormFieldConfig(
       code: 'email',
       placeholder: 'Почта',
-      type: TextInputType.emailAddress,
+      type: FormFieldType.text,
     ),
   ];
+
+  Widget buildWithLabel(String label, Widget field) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Label(text: label),
+        field
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,42 +69,44 @@ class _RegisterState extends State<Register> {
                     child: ListView.builder(
                       itemCount: fields.length,
                       itemBuilder: (context, index) {
-                        return fields[index].isSelect
-                            ? Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Select(
-                            validator: (value) {
-                              if (_selectedGender == null) return 'Field of select is required';
-                              return null;
-                            },
-                            label: 'Пол',
-                            func: (value) => _selectedGender = value!,
-                            items: Gender.values.map((gender) {
-                              return DropdownMenuItem(
-                                value: gender,
-                                child: Text(gender.title),
-                              );
-                            }).toList(),
-                          ),
-                        )
-                            : Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Input(
-                            labelText: fields[index].placeholder,
-                            keyboardType:
-                            fields[index].type ?? TextInputType.text,
-                            saved: (value) {
-                              print(value);
-                              fields[index].setValue(value!);
-                            },
-                            validator: (value) {
-                              if (value!.isEmpty && !['secondname', 'lastname'].contains(fields[index].code)) {
-                                return 'This field is required';
-                              }
-                              return null;
-                            },
-                          ),
-                        );
+                        final field = fields[index];
+                        switch (field.type) {
+                          case FormFieldType.text:
+                            return buildWithLabel(field.label!, Input(
+                              labelText: field.placeholder,
+                              saved: (value) => field.setValue(value!),
+                            ));
+                          case FormFieldType.select:
+                            return buildWithLabel(field.label!, Select(
+                              label: field.placeholder,
+                              items: field.options!
+                                  .map(
+                                    (e) =>
+                                    DropdownMenuItem(
+                                      value: e,
+                                      child: Text(e.title),
+                                    ),
+                              ).toList(),
+                              func: (value) => field.setValue(value.code),
+                            ));
+                          case FormFieldType.date:
+                            return buildWithLabel(field.label!, Input(
+                              labelText: field.placeholder,
+                              tap: () async {
+                                final DateTime? dateTime = await showDatePicker(
+                                  context: context,
+                                  firstDate: DateTime.now(),
+                                  initialDate: selectedDate,
+                                  lastDate: DateTime(3000),
+                                );
+                                if (dateTime != null) {
+                                  setState(() {
+                                    selectedDate = dateTime;
+                                  });
+                                }
+                              },
+                            ));
+                        }
                       },
                     ),
                   ),
@@ -102,16 +115,10 @@ class _RegisterState extends State<Register> {
                 text: 'Далее',
                 func: () {
                   if (_formGlobalKey.currentState!.validate()) {
-                    if (_selectedGender == null) return;
-                    print(_selectedGender);
                     _formGlobalKey.currentState!.save();
                     Map<String, dynamic> data = {};
                     for (var field in fields) {
-                      if (field.code.contains('gender')) {
-                        data[field.code] = _selectedGender!.code ? 'male': 'female';
-                      } else {
-                        data[field.code] = field.value;
-                      }
+                      data[field.code] = field.value;
                     }
 
                     //TODO: Api response with error of this values => other page opened

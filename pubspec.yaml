@@ -37,6 +37,7 @@ dependencies:
   flutter_local_notifications: any
   supabase_flutter: any
   flutter_secure_storage: any
+  get_time_ago: any
 
 
   # The following adds the Cupertino Icons font to your application.
